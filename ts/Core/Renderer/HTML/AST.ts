@@ -23,6 +23,7 @@ import type SVGAttributes from '../SVG/SVGAttributes';
 import H from '../../Globals.js';
 const {
     SVG_NS,
+    isChrome,
     win
 } = H;
 import U from '../../Utilities.js';
@@ -43,6 +44,18 @@ const {
 
 /* *
  *
+ *  Declarations
+ *
+ * */
+
+declare module 'trusted-types/lib' {
+    interface TrustedTypePolicyFactory {
+        highcharts?: Pick<TrustedTypePolicy, ('name'|'createHTML')>;
+    }
+}
+
+/* *
+ *
  *  Constants
  *
  * */
@@ -50,13 +63,25 @@ const {
 // Create the trusted type policy. This should not be exposed.
 const trustedTypesPolicy = (
     trustedTypes &&
-    isFunction(trustedTypes.createPolicy) &&
-    trustedTypes.createPolicy(
-        uniqueKey(), {
-            createHTML: (s: string): string => s
-        }
+    (
+        trustedTypes.highcharts || // prevent conflict in Chrome
+        isFunction(trustedTypes.createPolicy) &&
+        trustedTypes.createPolicy(
+            'highcharts', {
+                createHTML: (s: string): string => s
+            }
+        )
     )
 );
+
+if (
+    isChrome &&
+    trustedTypes &&
+    !trustedTypes.highcharts &&
+    trustedTypesPolicy
+) {
+    trustedTypes.highcharts = trustedTypesPolicy;
+}
 
 const emptyHTML = trustedTypesPolicy ?
     trustedTypesPolicy.createHTML('') as unknown as string :
