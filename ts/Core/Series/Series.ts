@@ -31,7 +31,7 @@ import type {
     PointShortOptions,
     PointStateHoverOptions
 } from './PointOptions';
-import type RangeSelector from '../../Extensions/RangeSelector';
+import type RangeSelector from '../../Stock/RangeSelector/RangeSelector';
 import type SeriesLike from './SeriesLike';
 import type {
     SeriesDataSortingOptions,
@@ -4219,7 +4219,8 @@ class Series {
                 'group',
                 'markerGroup',
                 'dataLabelsGroup',
-                'transformGroup'
+                'transformGroup',
+                'shadowGroup'
             ],
             // Animation must be enabled when calling update before the initial
             // animation has first run. This happens when calling update
